@@ -237,13 +237,18 @@ const ENQUIRY_WEB_APP_URL='https://script.google.com/macros/s/AKfycbz0iUzMwRq55E
 form?.addEventListener('submit',async e=>{
   e.preventDefault();
   if(!form.reportValidity()) return;
-  const data=new FormData(form);
-  const payload=new URLSearchParams({
-    name:String(data.get('name')||'').trim(),
-    phone:String(data.get('mobile')||'').trim(),
-    email:String(data.get('email')||'').trim(),
-    course:String(data.get('course')||'').trim()
-  });
+const data = new FormData(form);
+
+const payload = new URLSearchParams({
+  name: String(data.get('name') || '').trim(),
+  phone: String(data.get('mobile') || '').trim(),
+  email: String(data.get('email') || '').trim(),
+  course: String(data.get('course') || '').trim(),
+  qualification: String(data.get('qualification') || '').trim(),
+  passedOut: String(data.get('year') || '').trim(),
+  batch: String(data.get('batch') || '').trim(),
+  classType: String(data.get('mode') || '').trim()
+});
   const submitButton=form.querySelector('button[type="submit"],input[type="submit"]');
   if(submitButton){submitButton.disabled=true;submitButton.dataset.originalText=submitButton.textContent;submitButton.textContent='Submitting…';}
   success.style.display='block';
