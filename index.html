@@ -233,7 +233,31 @@ document.querySelectorAll('[data-course]').forEach(btn=>btn.addEventListener('cl
 
 const form=document.getElementById('leadForm');
 const success=document.getElementById('successMessage');
-form?.addEventListener('submit',e=>{e.preventDefault();const data=new FormData(form);const text=`Hi Besant Technologies OMR,\n\nCourse Enquiry\nName: ${data.get('name')}\nMobile: ${data.get('mobile')}\nEmail: ${data.get('email')||'-'}\nQualification: ${data.get('qualification')||'-'}\nPassed Out: ${data.get('year')||'-'}\nInterested Course: ${data.get('course')}\nPreferred Batch: ${data.get('batch')}\nMode: ${data.get('mode')}\nCandidate Type: ${data.get('type')}\nMessage: ${data.get('message')||'-'}`;window.open(`https://wa.me/918925958694?text=${encodeURIComponent(text)}`,'_blank','noopener');success.textContent='WhatsApp opened with your enquiry. Please tap Send to submit it to the OMR team.';success.style.display='block';});
+const ENQUIRY_WEB_APP_URL='https://script.google.com/macros/s/AKfycbz0iUzMwRq55EW1DuTbFdDh5ZqGxIMMHEvdxChO71E0G7_BvJlodhGVUnSd8igJNVilvA/exec';
+form?.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!form.reportValidity()) return;
+  const data=new FormData(form);
+  const payload=new URLSearchParams({
+    name:String(data.get('name')||'').trim(),
+    phone:String(data.get('mobile')||'').trim(),
+    email:String(data.get('email')||'').trim(),
+    course:String(data.get('course')||'').trim()
+  });
+  const submitButton=form.querySelector('button[type="submit"],input[type="submit"]');
+  if(submitButton){submitButton.disabled=true;submitButton.dataset.originalText=submitButton.textContent;submitButton.textContent='Submitting…';}
+  success.style.display='block';
+  success.textContent='Submitting your enquiry…';
+  try{
+    await fetch(ENQUIRY_WEB_APP_URL,{method:'POST',mode:'no-cors',body:payload});
+    success.textContent='Thank you! Your enquiry has been sent. The OMR team will contact you soon.';
+    form.reset();
+  }catch(err){
+    success.textContent='Unable to send right now. Please try again or call 9840258466.';
+  }finally{
+    if(submitButton){submitButton.disabled=false;submitButton.textContent=submitButton.dataset.originalText||'Submit Enquiry';}
+  }
+});
 
 document.getElementById('yearNow').textContent=new Date().getFullYear();
 
